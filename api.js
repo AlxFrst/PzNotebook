@@ -107,7 +107,7 @@ app.get('/mods', (req, res) => {
 app.get('/build/:modID/:modName', (req, res) => {
     const modID = req.params.modID;
     const modName = req.params.modName;
-    const targetDir = path.join('D:\\Launchers\\Steam\\steamapps\\workshop\\content\\108600', modID, 'mods', modName, 'media', 'lua', 'server');
+    const targetDir = path.join('D:\\Launchers\\Steam\\steamapps\\workshop\\content\\108600', modID, 'mods', modName, 'media', 'scripts');
 
     if (!fs.existsSync(targetDir)) {
         res.status(404).send('Dossier spécifié introuvable');
