@@ -113,14 +113,16 @@ function extractModuleItemNames(filePath) {
     const moduleNames = [];
     while ((moduleMatch = moduleRegex.exec(content)) !== null) {
         moduleNames.push(moduleMatch[1]);
+        console.log(moduleMatch[1]);
     }
 
     // Trouver les noms d'items dans chaque module
-    const itemRegex = /^item\s+([^\s{]+)/gm;
+    const itemRegex = /^item\s+([^\s{]+)\s*{/gm;
     let itemMatch;
     const items = [];
     while ((itemMatch = itemRegex.exec(content)) !== null) {
         items.push(itemMatch[1]);
+        console.log(itemMatch[1]);
     }
 
     // Combiner les noms des modules et des items
