@@ -139,7 +139,7 @@ app.get('/build/:modID/:modName', (req, res) => {
 
         res.json(allModuleItemNames);
     } catch (err) {
-        res.status(500).send('Erreur lors de l'extraction des noms de modules et d'items');
+        res.status(500).send("Erreur lors de l'extraction des noms de modules et d'items");
     }
 });
 
