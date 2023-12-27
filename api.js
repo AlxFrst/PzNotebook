@@ -106,28 +106,32 @@ app.get('/mods', (req, res) => {
 
 function extractModuleItemNames(filePath) {
     const content = fs.readFileSync(filePath, 'utf8');
+    const lines = content.split('\n'); // Diviser le contenu en lignes
 
-    // Trouver les noms de modules
-    const moduleRegex = /^module\s+([^\s{]+)/gm;
-    let moduleMatch;
-    const moduleNames = [];
-    while ((moduleMatch = moduleRegex.exec(content)) !== null) {
-        moduleNames.push(moduleMatch[1]);
-        console.log(moduleMatch[1]);
-    }
+    let currentModule = '';
+    const moduleItems = [];
 
-    // Trouver les noms d'items dans chaque module
-    const itemRegex = /^item\s+([^\s{]+)\s*\{/gm;
-    let itemMatch;
-    const items = [];
-    while ((itemMatch = itemRegex.exec(content)) !== null) {
-        items.push(itemMatch[1]);
-        console.log(itemMatch[1]);
-    }
+    lines.forEach(line => {
+        // Vérifier si la ligne est une déclaration de module
+        if (line.startsWith('module')) {
+            const moduleNameMatch = line.match(/^module\s+([^\s{]+)/);
+            if (moduleNameMatch) {
+                currentModule = moduleNameMatch[1];
+            }
+        }
 
-    // Combiner les noms des modules et des items
-    return moduleNames.flatMap(moduleName => items.map(itemName => `${moduleName}.${itemName}`));
+        // Vérifier si la ligne est une déclaration d'item
+        else if (line.trim().startsWith('item')) {
+            const itemNameMatch = line.match(/^item\s+([^\s{]+)/);
+            if (itemNameMatch && currentModule) {
+                moduleItems.push(`${currentModule}.${itemNameMatch[1]}`);
+            }
+        }
+    });
+
+    return moduleItems;
 }
+
 
 
 app.get('/build/:modID/:modName', (req, res) => {
