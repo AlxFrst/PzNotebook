@@ -124,7 +124,7 @@ function extractModuleItemNames(filePath) {
 app.get('/build/:modID/:modName', (req, res) => {
     const modID = req.params.modID;
     const modName = req.params.modName;
-    const targetPath = path.join('./108600', modID, 'mods', modName, 'media', 'scripts');
+    const targetPath = path.join('D:\\Launchers\\Steam\\steamapps\\workshop\\content\\108600', modID, 'mods', modName, 'media', 'scripts');
 
     if (!fs.existsSync(targetPath)) {
         res.status(404).send('Dossier spécifié introuvable');
