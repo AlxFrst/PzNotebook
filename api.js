@@ -6,17 +6,19 @@ const app = express();
 const port = 3000;
 
 // Fonction pour parcourir récursivement les dossiers
-function listFilesRecursively(dir, fileList = []) {
+function listFilesRecursively(dir, baseDir, fileList = []) {
     fs.readdirSync(dir, { withFileTypes: true }).forEach(dirent => {
         const res = path.resolve(dir, dirent.name);
         if (dirent.isDirectory()) {
-            listFilesRecursively(res, fileList);
+            listFilesRecursively(res, baseDir, fileList);
         } else if (dirent.isFile() && (res.endsWith('.lua') || res.endsWith('.txt'))) {
-            fileList.push(res);
+            const relativePath = path.relative(baseDir, res);
+            fileList.push(relativePath);
         }
     });
     return fileList;
 }
+
 
 // Endpoint pour obtenir la liste des fichiers .lua et .txt dans un mod spécifique
 app.get('/mod-files/:modID/:modName', (req, res) => {
@@ -30,7 +32,7 @@ app.get('/mod-files/:modID/:modName', (req, res) => {
     }
 
     try {
-        let files = listFilesRecursively(modPath);
+        let files = listFilesRecursively(modPath, basePath);
         res.json(files);
     } catch (err) {
         res.status(500).send('Erreur lors de la recherche des fichiers');
