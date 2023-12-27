@@ -24,7 +24,7 @@ app.get('/mod-files/:modID/:modName', (req, res) => {
     const modID = req.params.modID;
     const modName = req.params.modName;
     const modPath = path.join('D:\\Launchers\\Steam\\steamapps\\workshop\\content\\108600', modID, 'mods', modName);
-    const basePath = path.join('D:\\Launchers\\Steam\\steamapps\\workshop\\content\\108600', modID, 'mods', modName, 'media');
+    const basePath = modPath;
 
     if (!fs.existsSync(modPath)) {
         res.status(404).send('Dossier de mod introuvable');
