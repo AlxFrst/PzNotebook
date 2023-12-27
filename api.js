@@ -106,20 +106,27 @@ app.get('/mods', (req, res) => {
 
 function extractModuleItemNames(filePath) {
     const content = fs.readFileSync(filePath, 'utf8');
-    let moduleNames = content.match(/^module\s+(\w+)/gm);
-    let itemNames = content.match(/^item\s+(\w+)/gm);
 
-    if (!moduleNames || !itemNames) {
-        return [];
+    // Trouver les noms de modules
+    const moduleRegex = /^module\s+([^\s{]+)/gm;
+    let moduleMatch;
+    const moduleNames = [];
+    while ((moduleMatch = moduleRegex.exec(content)) !== null) {
+        moduleNames.push(moduleMatch[1]);
     }
 
-    moduleNames = moduleNames.map(name => name.split(/\s+/)[1]);
-    itemNames = itemNames.map(name => name.split(/\s+/)[1]);
+    // Trouver les noms d'items dans chaque module
+    const itemRegex = /^item\s+(\w+)/gm;
+    let itemMatch;
+    const items = [];
+    while ((itemMatch = itemRegex.exec(content)) !== null) {
+        items.push(itemMatch[1]);
+    }
 
-    return moduleNames.map(moduleName => {
-        return itemNames.map(itemName => `${moduleName}.${itemName}`);
-    }).flat();
+    // Combiner les noms des modules et des items
+    return moduleNames.flatMap(moduleName => items.map(itemName => `${moduleName}.${itemName}`));
 }
+
 
 
 
