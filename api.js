@@ -104,10 +104,27 @@ app.get('/mods', (req, res) => {
     });
 });
 
-app.get('/build/:modID/:modName', async (req, res) => {
+function extractModuleItemNames(filePath) {
+    const content = fs.readFileSync(filePath, 'utf8');
+    let moduleNames = content.match(/^module\s+(\w+)/gm);
+    let itemNames = content.match(/^item\s+(\w+)/gm);
+
+    if (!moduleNames || !itemNames) {
+        return [];
+    }
+
+    moduleNames = moduleNames.map(name => name.split(/\s+/)[1]);
+    itemNames = itemNames.map(name => name.split(/\s+/)[1]);
+
+    return moduleNames.map(moduleName => {
+        return itemNames.map(itemName => `${moduleName}.${itemName}`);
+    }).flat();
+}
+
+app.get('/build/:modID/:modName', (req, res) => {
     const modID = req.params.modID;
     const modName = req.params.modName;
-    const targetPath = path.join('D:\\Launchers\\Steam\\steamapps\\workshop\\content\\108600', modID, 'mods', modName, 'media', 'scripts');
+    const targetPath = path.join('./108600', modID, 'mods', modName, 'media', 'scripts');
 
     if (!fs.existsSync(targetPath)) {
         res.status(404).send('Dossier spécifié introuvable');
@@ -116,30 +133,16 @@ app.get('/build/:modID/:modName', async (req, res) => {
 
     try {
         let txtFiles = listFilesRecursively(targetPath, targetPath).filter(file => file.endsWith('.txt'));
-        let allItems = [];
+        let allModuleItemNames = txtFiles.map(file => {
+            return extractModuleItemNames(path.join(targetPath, file));
+        }).flat();
 
-        for (const file of txtFiles) {
-            const fileContent = fs.readFileSync(path.join(targetPath, file), 'utf8');
-            allItems.push(...extractItems(fileContent));
-        }
-
-        res.json(allItems);
+        res.json(allModuleItemNames);
     } catch (err) {
-        res.status(500).send('Erreur lors de la construction des items');
+        res.status(500).send('Erreur lors de l'extraction des noms de modules et d'items');
     }
 });
 
-function extractItems(fileContent) {
-    const itemRegex = /module\s+(\w+)\s+\{[\s\S]+?item\s+(\w+)\s+\{/g;
-    let match;
-    let items = [];
-
-    while ((match = itemRegex.exec(fileContent)) !== null) {
-        items.push(`${match[1]}.${match[2]}`);
-    }
-
-    return items;
-}
 
 
 
