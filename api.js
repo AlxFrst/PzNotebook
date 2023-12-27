@@ -6,25 +6,23 @@ const app = express();
 const port = 3000;
 
 // Fonction pour parcourir récursivement les dossiers
-function listFilesRecursively(dir, baseDir, fileList = []) {
+function listFilesRecursively(dir, fileList = []) {
     fs.readdirSync(dir, { withFileTypes: true }).forEach(dirent => {
         const res = path.resolve(dir, dirent.name);
         if (dirent.isDirectory()) {
-            listFilesRecursively(res, baseDir, fileList);
+            listFilesRecursively(res, fileList);
         } else if (dirent.isFile() && (res.endsWith('.lua') || res.endsWith('.txt'))) {
-            const relativePath = path.relative(baseDir, res);
-            fileList.push(relativePath);
+            fileList.push(res);
         }
     });
     return fileList;
 }
 
-
 // Endpoint pour obtenir la liste des fichiers .lua et .txt dans un mod spécifique
 app.get('/mod-files/:modID/:modName', (req, res) => {
     const modID = req.params.modID;
     const modName = req.params.modName;
-    const modPath = path.join('D:\\Launchers\\Steam\\steamapps\\workshop\\content\\108600', modID, 'mods', modName);
+    const modPath = path.join('./108600', modID, 'mods', modName);
 
     if (!fs.existsSync(modPath)) {
         res.status(404).send('Dossier de mod introuvable');
@@ -32,23 +30,20 @@ app.get('/mod-files/:modID/:modName', (req, res) => {
     }
 
     try {
-        let files = listFilesRecursively(modPath, basePath);
+        let files = listFilesRecursively(modPath);
         res.json(files);
     } catch (err) {
         res.status(500).send('Erreur lors de la recherche des fichiers');
     }
 });
 
-// Endpoint modifié pour obtenir le contenu d'un fichier en utilisant un paramètre de requête
-app.get('/file-content', (req, res) => {
-    const { modID, modName, filePath } = req.query;
+// Endpoint pour obtenir le contenu d'un fichier spécifique
+app.get('/file-content/:modID/:modName/:filePath', (req, res) => {
+    const modID = req.params.modID;
+    const modName = req.params.modName;
+    const filePath = req.params.filePath;
 
-    if (!modID || !modName || !filePath) {
-        res.status(400).send('Paramètres modID, modName et filePath sont requis');
-        return;
-    }
-
-    const fullFilePath = path.join('D:\\Launchers\\Steam\\steamapps\\workshop\\content\\108600', modID, 'mods', modName, filePath);
+    const fullFilePath = path.join('./108600', modID, 'mods', modName, filePath);
 
     fs.readFile(fullFilePath, 'utf8', (err, data) => {
         if (err) {
@@ -63,10 +58,9 @@ app.get('/file-content', (req, res) => {
     });
 });
 
-
 // Lister tous les mods pour chaque ID de mod
 app.get('/mods', (req, res) => {
-    const modsBasePath = 'D:\\Launchers\\Steam\\steamapps\\workshop\\content\\108600';
+    const modsBasePath = './108600';
     fs.readdir(modsBasePath, { withFileTypes: true }, (err, dirs) => {
         if (err) {
             res.status(500).send('Erreur lors de la lecture du dossier');
