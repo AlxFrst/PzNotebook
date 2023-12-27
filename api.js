@@ -151,6 +151,41 @@ app.get('/build/:modID/:modName', (req, res) => {
     }
 });
 
+app.get('/allitems', (req, res) => {
+    const modsBasePath = 'D:\\Launchers\\Steam\\steamapps\\workshop\\content\\108600';
+    fs.readdir(modsBasePath, { withFileTypes: true }, (err, dirs) => {
+        if (err) {
+            res.status(500).send('Erreur lors de la lecture du dossier');
+            return;
+        }
+
+        let modIDs = dirs.filter(dirent => dirent.isDirectory()).map(dirent => dirent.name);
+        let allModsItems = {};
+
+        modIDs.forEach(modID => {
+            let modPath = path.join(modsBasePath, modID, 'mods');
+            if (fs.existsSync(modPath)) {
+                fs.readdirSync(modPath, { withFileTypes: true }).forEach(dirent => {
+                    if (dirent.isDirectory()) {
+                        const modName = dirent.name;
+                        const targetPath = path.join(modPath, modName, 'media', 'scripts');
+                        if (fs.existsSync(targetPath)) {
+                            let txtFiles = listFilesRecursively(targetPath, targetPath).filter(file => file.endsWith('.txt'));
+                            let moduleItemNames = txtFiles.map(file => {
+                                return extractModuleItemNames(path.join(targetPath, file));
+                            }).flat();
+                            allModsItems[modName] = moduleItemNames;
+                        }
+                    }
+                });
+            }
+        });
+
+        res.json(allModsItems);
+    });
+});
+
+
 
 
 
