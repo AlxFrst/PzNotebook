@@ -22,7 +22,7 @@ function listFilesRecursively(dir, fileList = []) {
 app.get('/mod-files/:modID/:modName', (req, res) => {
     const modID = req.params.modID;
     const modName = req.params.modName;
-    const modPath = path.join('./108600', modID, 'mods', modName);
+    const modPath = path.join('D:\\Launchers\\Steam\\steamapps\\workshop\\content\\108600', modID, 'mods', modName);
 
     if (!fs.existsSync(modPath)) {
         res.status(404).send('Dossier de mod introuvable');
@@ -46,7 +46,7 @@ app.get('/file-content', (req, res) => {
         return;
     }
 
-    const fullFilePath = path.join('./108600', modID, 'mods', modName, filePath);
+    const fullFilePath = path.join('D:\\Launchers\\Steam\\steamapps\\workshop\\content\\108600', modID, 'mods', modName, filePath);
 
     fs.readFile(fullFilePath, 'utf8', (err, data) => {
         if (err) {
@@ -64,7 +64,7 @@ app.get('/file-content', (req, res) => {
 
 // Lister tous les mods pour chaque ID de mod
 app.get('/mods', (req, res) => {
-    const modsBasePath = './108600';
+    const modsBasePath = 'D:\\Launchers\\Steam\\steamapps\\workshop\\content\\108600';
     fs.readdir(modsBasePath, { withFileTypes: true }, (err, dirs) => {
         if (err) {
             res.status(500).send('Erreur lors de la lecture du dossier');
