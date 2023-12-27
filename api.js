@@ -115,8 +115,9 @@ function extractModuleItemNames(filePath) {
         if (line.startsWith('module')) {
             currentModule = line.split(/\s+/)[1];
         } else if (line.startsWith('item')) {
-            const itemName = line.match(/^item\s+(\w+)/)[1];
-            if (currentModule) {
+            const match = line.match(/^item\s+(\w+)/);
+            if (match && currentModule) {
+                const itemName = match[1];
                 moduleItems.push(`${currentModule}.${itemName}`);
             }
         }
@@ -124,8 +125,6 @@ function extractModuleItemNames(filePath) {
 
     return moduleItems;
 }
-
-
 
 
 
