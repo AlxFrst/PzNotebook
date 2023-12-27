@@ -37,11 +37,14 @@ app.get('/mod-files/:modID/:modName', (req, res) => {
     }
 });
 
-// Endpoint pour obtenir le contenu d'un fichier spécifique
-app.get('/file-content/:modID/:modName/:filePath', (req, res) => {
-    const modID = req.params.modID;
-    const modName = req.params.modName;
-    const filePath = req.params.filePath;
+// Endpoint modifié pour obtenir le contenu d'un fichier en utilisant un paramètre de requête
+app.get('/file-content', (req, res) => {
+    const { modID, modName, filePath } = req.query;
+
+    if (!modID || !modName || !filePath) {
+        res.status(400).send('Paramètres modID, modName et filePath sont requis');
+        return;
+    }
 
     const fullFilePath = path.join('./108600', modID, 'mods', modName, filePath);
 
@@ -57,6 +60,7 @@ app.get('/file-content/:modID/:modName/:filePath', (req, res) => {
         res.send(data);
     });
 });
+
 
 // Lister tous les mods pour chaque ID de mod
 app.get('/mods', (req, res) => {
