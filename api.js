@@ -104,24 +104,43 @@ app.get('/mods', (req, res) => {
     });
 });
 
-app.get('/build/:modID/:modName', (req, res) => {
+app.get('/build/:modID/:modName', async (req, res) => {
     const modID = req.params.modID;
     const modName = req.params.modName;
-    const targetDir = path.join('D:\\Launchers\\Steam\\steamapps\\workshop\\content\\108600', modID, 'mods', modName, 'media', 'scripts');
+    const targetPath = path.join('D:\\Launchers\\Steam\\steamapps\\workshop\\content\\108600', modID, 'mods', modName, 'media', 'lua', 'server');
 
-    if (!fs.existsSync(targetDir)) {
+    if (!fs.existsSync(targetPath)) {
         res.status(404).send('Dossier spécifié introuvable');
         return;
     }
 
     try {
-        let txtFiles = listFilesRecursively(targetDir, targetDir)
-            .filter(file => file.endsWith('.txt'));
-        res.json(txtFiles);
+        let txtFiles = listFilesRecursively(targetPath, targetPath).filter(file => file.endsWith('.txt'));
+        let allItems = [];
+
+        for (const file of txtFiles) {
+            const fileContent = fs.readFileSync(path.join(targetPath, file), 'utf8');
+            allItems.push(...extractItems(fileContent));
+        }
+
+        res.json(allItems);
     } catch (err) {
-        res.status(500).send('Erreur lors de la recherche des fichiers .txt');
+        res.status(500).send('Erreur lors de la construction des items');
     }
 });
+
+function extractItems(fileContent) {
+    const itemRegex = /module\s+(\w+)\s+\{[\s\S]+?item\s+(\w+)\s+\{/g;
+    let match;
+    let items = [];
+
+    while ((match = itemRegex.exec(fileContent)) !== null) {
+        items.push(`${match[1]}.${match[2]}`);
+    }
+
+    return items;
+}
+
 
 
 app.listen(port, () => {
