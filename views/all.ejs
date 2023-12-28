@@ -17,7 +17,7 @@
             Ajouter une catégorie
         </button>
 
-        <a href="/lab" class="btn btn-primary">Laboratoire des mods</a>
+        <a href="/" class="btn btn-primary">Tous les mods</a>
 
         <div class="container mt-4" id="categoriesContainer">
             <!-- Les catégories seront ajoutées ici dynamiquement -->
@@ -95,9 +95,9 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
             crossorigin="anonymous"></script>
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-                integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
-                crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+            integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+            crossorigin="anonymous" referrerpolicy="no-referrer" />
 
         <script>
             function openEditModal(category) {
@@ -110,82 +110,82 @@
             }
 
             function deleteCategory(categoryId) {
-                    if (!confirm("Êtes-vous sûr de vouloir supprimer cette catégorie ?")) {
-                        return; // Ajouter une confirmation avant la suppression
-                    }
-
-                    fetch(`/delete-category/${categoryId}`, {
-                        method: 'DELETE'
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            console.log(data);
-                            // Retirer la carte de la catégorie supprimée du DOM ou recharger la page
-                            window.location.reload();
-                        })
-                        .catch(error => console.error('Erreur:', error));
+                if (!confirm("Êtes-vous sûr de vouloir supprimer cette catégorie ?")) {
+                    return; // Ajouter une confirmation avant la suppression
                 }
 
-                function showNotification(message) {
-                        const notification = document.createElement('div');
-                        notification.textContent = message;
-                        notification.style.backgroundColor = 'green';
-                        notification.style.color = 'white';
-                        notification.style.padding = '10px';
-                        notification.style.position = 'fixed';
-                        notification.style.bottom = '20px';
-                        notification.style.right = '20px';
-                        notification.style.zIndex = '1000';
+                fetch(`/delete-category/${categoryId}`, {
+                    method: 'DELETE'
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data);
+                        // Retirer la carte de la catégorie supprimée du DOM ou recharger la page
+                        window.location.reload();
+                    })
+                    .catch(error => console.error('Erreur:', error));
+            }
 
-                        document.body.appendChild(notification);
+            function showNotification(message) {
+                const notification = document.createElement('div');
+                notification.textContent = message;
+                notification.style.backgroundColor = 'green';
+                notification.style.color = 'white';
+                notification.style.padding = '10px';
+                notification.style.position = 'fixed';
+                notification.style.bottom = '20px';
+                notification.style.right = '20px';
+                notification.style.zIndex = '1000';
 
-                        // Faire disparaître la notification après 3 secondes
-                        setTimeout(() => {
-                            notification.remove();
-                        }, 3000);
-                    }
+                document.body.appendChild(notification);
+
+                // Faire disparaître la notification après 3 secondes
+                setTimeout(() => {
+                    notification.remove();
+                }, 3000);
+            }
 
 
 
-    window.onload = function () {
-        fetch('/categories')
-            .then(response => response.json())
-            .then(data => {
-                const categoriesContainer = document.getElementById('categoriesContainer');
-                data.categories.forEach(category => {
-                    const categoryElement = document.createElement('div');
-                    categoryElement.classList.add('card', 'mb-3');
+            window.onload = function () {
+                fetch('/categories')
+                    .then(response => response.json())
+                    .then(data => {
+                        const categoriesContainer = document.getElementById('categoriesContainer');
+                        data.categories.forEach(category => {
+                            const categoryElement = document.createElement('div');
+                            categoryElement.classList.add('card', 'mb-3');
 
-                    // Création de la liste des objets
-                    let objetsList = '';
-                    if (category.objets) {
-                        const objetsArray = category.objets.split(',');
-                        objetsList = '<ul class="list-group list-group-flush collapse" id="collapseObjets' + category.id + '">' +
-                            objetsArray.map(objet => `<li class="list-group-item clickable">${objet.trim()}</li>`).join('') +
-                            '</ul>';
-                    }
+                            // Création de la liste des objets
+                            let objetsList = '';
+                            if (category.objets) {
+                                const objetsArray = category.objets.split(',');
+                                objetsList = '<ul class="list-group list-group-flush collapse" id="collapseObjets' + category.id + '">' +
+                                    objetsArray.map(objet => `<li class="list-group-item clickable">${objet.trim()}</li>`).join('') +
+                                    '</ul>';
+                            }
 
-                    // Bouton de modification
-                    const editIcon = document.createElement('a');
-                    editIcon.href = '#';
-                    editIcon.innerHTML = '<i class="fas fa-edit"></i>'; // Utilisez une icône de votre choix
-                    editIcon.classList.add('edit-icon', 'btn', 'btn-primary', 'ms-2');
-                    editIcon.style.cursor = 'pointer';
-                    editIcon.onclick = function () { openEditModal(category); };
+                            // Bouton de modification
+                            const editIcon = document.createElement('a');
+                            editIcon.href = '#';
+                            editIcon.innerHTML = '<i class="fas fa-edit"></i>'; // Utilisez une icône de votre choix
+                            editIcon.classList.add('edit-icon', 'btn', 'btn-primary', 'ms-2');
+                            editIcon.style.cursor = 'pointer';
+                            editIcon.onclick = function () { openEditModal(category); };
 
-                    // Bouton de suppression
-                    const deleteButton = document.createElement('button');
-                    deleteButton.innerHTML = '<i class="fas fa-trash-alt"></i>'; // Utilisez une icône de votre choix
-                    deleteButton.classList.add('btn', 'btn-danger', 'ms-2');
-                    deleteButton.onclick = function () { deleteCategory(category.id); };
+                            // Bouton de suppression
+                            const deleteButton = document.createElement('button');
+                            deleteButton.innerHTML = '<i class="fas fa-trash-alt"></i>'; // Utilisez une icône de votre choix
+                            deleteButton.classList.add('btn', 'btn-danger', 'ms-2');
+                            deleteButton.onclick = function () { deleteCategory(category.id); };
 
-                    const buttonGroup = document.createElement('div');
-                    buttonGroup.classList.add('d-flex', 'justify-content-end');
-                    buttonGroup.appendChild(editIcon);
-                    buttonGroup.appendChild(deleteButton);
+                            const buttonGroup = document.createElement('div');
+                            buttonGroup.classList.add('d-flex', 'justify-content-end');
+                            buttonGroup.appendChild(editIcon);
+                            buttonGroup.appendChild(deleteButton);
 
-                    // Construction de la carte
-                    categoryElement.innerHTML = `
+                            // Construction de la carte
+                            categoryElement.innerHTML = `
                 <div class="card-body position-relative" data-bs-toggle="collapse" data-bs-target="#collapseObjets${category.id}" aria-expanded="false" aria-controls="collapseObjets${category.id}">
                     <h5 class="card-title">${category.nom}</h5>
                     <p class="card-text">${category.description}</p>
@@ -193,37 +193,37 @@
                 ${objetsList}
             `;
 
-                    categoryElement.querySelector('.card-body').appendChild(buttonGroup);
-                    categoriesContainer.appendChild(categoryElement);
-                });
-            })
-            .catch(error => console.error('Erreur:', error));
-    };
+                            categoryElement.querySelector('.card-body').appendChild(buttonGroup);
+                            categoriesContainer.appendChild(categoryElement);
+                        });
+                    })
+                    .catch(error => console.error('Erreur:', error));
+            };
 
             document.getElementById('editCategoryForm').addEventListener('submit', function (event) {
-                    event.preventDefault();
+                event.preventDefault();
 
-                    const id = document.getElementById('editCategoryId').value;
-                    const description = document.getElementById('editCategoryDescription').value;
-                    const objets = document.getElementById('editCategoryItems').value;
+                const id = document.getElementById('editCategoryId').value;
+                const description = document.getElementById('editCategoryDescription').value;
+                const objets = document.getElementById('editCategoryItems').value;
 
-                    fetch('/update-category', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ id, description, objets }),
+                fetch('/update-category', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ id, description, objets }),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data);
+                        // recharger la page
+                        window.location.reload();
                     })
-                        .then(response => response.json())
-                        .then(data => {
-                            console.log(data);
-                            // recharger la page
-                            window.location.reload();
-                        })
-                        .catch((error) => {
-                            console.error('Erreur:', error);
-                        });
-                });
+                    .catch((error) => {
+                        console.error('Erreur:', error);
+                    });
+            });
 
             document.getElementById('categoryForm').addEventListener('submit', function (event) {
                 event.preventDefault();
@@ -252,16 +252,16 @@
             });
 
             categoriesContainer.addEventListener('click', function (event) {
-                    if (event.target.classList.contains('clickable')) {
-                        const text = event.target.textContent;
-                        navigator.clipboard.writeText(text).then(() => {
-                            // Afficher la notification
-                            showNotification("Copié dans le presse-papiers : " + text);
-                        }).catch(err => {
-                            console.error('Erreur lors de la copie :', err);
-                        });
-                    }
-                });
+                if (event.target.classList.contains('clickable')) {
+                    const text = event.target.textContent;
+                    navigator.clipboard.writeText(text).then(() => {
+                        // Afficher la notification
+                        showNotification("Copié dans le presse-papiers : " + text);
+                    }).catch(err => {
+                        console.error('Erreur lors de la copie :', err);
+                    });
+                }
+            });
 
         </script>
 

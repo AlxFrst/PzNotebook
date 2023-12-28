@@ -2,9 +2,16 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
+const axios = require('axios');
+
+// start the api.js
+const api = require('./api');
 
 // Initialiser Express
 const app = express();
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
 
 // Use public folder for static files
 app.use(express.static('public'));
@@ -37,8 +44,8 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Route pour la page d'accueil
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+app.get('/custom', (req, res) => {
+    res.render('all');
 });
 
 // Route pour ajouter une catégorie
@@ -98,6 +105,16 @@ app.delete('/delete-category/:id', (req, res) => {
     });
 });
 
+// Route pour envoyer la page HTML avec les données intégrées
+app.get('/', async (req, res) => {
+    try {
+        const response = await axios.get('http://localhost:3001/allitems');
+        res.render('index', { items: response.data });
+    } catch (error) {
+        console.error('Erreur:', error);
+        res.status(500).send('Erreur serveur');
+    }
+});
 
 // Démarrer le serveur
 const PORT = process.env.PORT || 3000;
